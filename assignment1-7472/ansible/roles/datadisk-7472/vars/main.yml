@@ -1,0 +1,4 @@
+---
+data_disk: /dev/sdc
+mount_point_part1: /part1
+mount_point_part2: /part2

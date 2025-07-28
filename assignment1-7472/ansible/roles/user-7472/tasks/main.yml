@@ -1,0 +1,70 @@
+---
+- name: Wait for SSH to be available
+  ansible.builtin.wait_for_connection:
+    delay: 10
+    timeout: 120
+
+- name: Ensure group exists
+  ansible.builtin.group:
+    name: "{{ group_name }}"
+    state: present
+
+- name: Create users with SSH keys and add to groups
+  ansible.builtin.user:
+    name: "{{ item }}"
+    groups: "{{ group_name }},sudo"
+    append: yes
+    shell: /bin/bash
+    generate_ssh_key: yes
+    ssh_key_bits: 2048
+    ssh_key_file: .ssh/id_rsa
+    ssh_key_passphrase: ""
+    state: present
+  loop: "{{ users }}"
+  loop_control:
+    pause: 2
+  become: true
+
+- name: Set permissions for .ssh directory
+  ansible.builtin.file:
+    path: "/home/{{ item }}/.ssh"
+    state: directory
+    owner: "{{ item }}"
+    group: "{{ item }}"
+    mode: '0700'
+  loop: "{{ users }}"
+  loop_control:
+    pause: 1
+  become: true
+
+- name: Set permissions for private SSH key
+  ansible.builtin.file:
+    path: "/home/{{ item }}/.ssh/id_rsa"
+    state: file
+    owner: "{{ item }}"
+    group: "{{ item }}"
+    mode: '0600'
+  loop: "{{ users }}"
+  loop_control:
+    pause: 1
+  become: true
+
+- name: Fetch private key of selected user to local machine
+  ansible.builtin.fetch:
+    src: "/home/{{ download_user }}/.ssh/id_rsa"
+    dest: "{{ local_key_path }}/id_rsa"
+    flat: yes
+    fail_on_missing: yes
+  when: inventory_hostname == download_host
+  become: true
+
+- name: Create authorized_keys file for users
+  ansible.builtin.copy:
+    src: "/home/{{ item }}/.ssh/id_rsa.pub"
+    dest: "/home/{{ item }}/.ssh/authorized_keys"
+    remote_src: true
+    owner: "{{ item }}"
+    group: "{{ item }}"
+    mode: '0600'
+  loop: "{{ users }}"
+  become: true

@@ -1,0 +1,9 @@
+- name: Configure all Linux VMs
+  hosts: linux
+  serial: 1
+  become: yes
+  roles:
+    - profile-7472
+    - user-7472
+    - datadisk-7472
+    - webserver-7472

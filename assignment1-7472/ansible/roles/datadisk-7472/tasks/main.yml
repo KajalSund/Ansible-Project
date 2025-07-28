@@ -1,0 +1,99 @@
+- name: Ensure existing /part1 and /part2 are unmounted if mounted
+  mount:
+    path: "{{ item }}"
+    state: unmounted
+  loop:
+    - /part1
+    - /part2
+  ignore_errors: true
+
+- name: Wipe existing partitions on /dev/sdc
+  shell: |
+    umount /dev/sdc* || true
+    wipefs -a /dev/sdc
+    dd if=/dev/zero of=/dev/sdc bs=1M count=10
+ 
+  become: true
+  ignore_errors: false
+
+
+- name: Create 4GB partition with XFS
+  parted:
+    device: "{{ data_disk }}"
+    number: 1
+    state: present
+    part_type: primary
+    fs_type: xfs
+    resize: no
+    part_start: 0%
+    part_end: 40%
+  become: true
+
+- name: Create 5GB partition with EXT4
+  parted:
+    device: "{{ data_disk }}"
+    number: 2
+    state: present
+    part_type: primary
+    fs_type: ext4
+    resize: no
+    part_start: 40%
+    part_end: 90%
+  become: true
+
+- name: Create XFS filesystem on partition 1
+  filesystem:
+    fstype: xfs
+    dev: "{{ data_disk }}1"
+  become: true
+
+- name: Create EXT4 filesystem on partition 2
+  filesystem:
+    fstype: ext4
+    dev: "{{ data_disk }}2"
+  become: true
+
+- name: Create mount points
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - /part1
+    - /part2
+  become: true
+
+- name: Mount /part1
+  mount:
+    path: /part1
+    src: "{{ data_disk }}1"
+    fstype: xfs
+    opts: defaults
+    state: mounted
+  become: true
+
+- name: Mount /part2
+  mount:
+    path: /part2
+    src: "{{ data_disk }}2"
+    fstype: ext4
+    opts: defaults
+    state: mounted
+  become: true
+
+- name: Display partition info and verify mount status
+  shell: |
+    echo "Disk Partition Info:"
+    lsblk /dev/sdc
+
+    echo "Mounted Partitions:"
+    df -h | grep part || true
+
+    echo "Persistent Mount Configurations:"
+    grep part /etc/fstab || true
+  register: disk_check_output
+  changed_when: false
+
+- name: Show disk verification output
+  debug:
+    var: disk_check_output.stdout_lines

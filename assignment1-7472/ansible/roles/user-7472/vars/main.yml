@@ -1,0 +1,17 @@
+---
+users:
+  - user100
+  - user200
+  - user300
+
+group_name: cloudadmins
+
+# Host where the private key should be copied for download
+download_host: vm-7472-u-1-dns.canadacentral.cloudapp.azure.com
+
+# Which user to copy private key for
+download_user: user100
+
+# Where to place the key on remote VM
+remote_key_path: "/tmp/{{ download_user }}_id_rsa"
+local_key_path: "./downloaded_keys"

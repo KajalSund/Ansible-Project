@@ -1,0 +1,6 @@
+- name: Add TMOUT block to /etc/profile
+  blockinfile:
+    path: /etc/profile
+    block: |
+      #Test block added by Ansible……n01737472
+      export TMOUT=1500

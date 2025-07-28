@@ -1,0 +1,60 @@
+
+# Terraform
+*.tfstate
+*.tfstate.backup
+.terraform/
+.terraform.lock.hcl
+crash.log
+override.tf
+override.tf.json
+terraform.tfvars
+*.auto.tfvars
+*.tfplan
+
+# Ansible
+*.retry
+*.log
+inventory.ini
+hosts
+ansible.cfg
+*.vault
+*.vault_pass
+
+# SSH keys
+*.pem
+*.key
+*.pub
+id_rsa
+id_rsa.*
+downloaded_keys/
+*.ssh/
+
+# OS/macOS junk
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+ehthumbs.db
+Thumbs.db
+
+# Python virtualenv (if used with Ansible roles)
+venv/
+__pycache__/
+*.pyc
+
+# Logs
+*.log
+
+
+# Editor and IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.bak
+
+# Output files
+*.out
+*.zip
+*.tar.gz
+*.tgz
