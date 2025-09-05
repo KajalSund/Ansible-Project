@@ -3,6 +3,13 @@
 
 This project provisions a complete Azure infrastructure using **Terraform** and configures it using **Ansible**. It supports scalable Linux and Windows virtual machine deployments, networking, storage, load balancing, and monitoring resources. The entire setup is designed to be **modular, reusable, parameterized, and non-interactive**.
 
+## Demo Video
+[![Watch the demo](https://img.youtube.com/vi/-M-O1Ft800U/0.jpg)](https://www.youtube.com/watch?v=-M-O1Ft800U)
+
+### user100 SSH Login 
+
+[![Watch the demo](https://img.youtube.com/vi/J1gX-l1SEsg/0.jpg)](https://www.youtube.com/watch?v=J1gX-l1SEsg)
+
 ## Project Features
 
 ### Terraform:
